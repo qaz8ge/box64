@@ -27,20 +27,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [X64, RISCV, RK3588, ARM64, ANDROID, TERMUX, LARCH64]
-        type: [Release, Trace, StaticBuild, Box32]
+        platform: [ARM64]
+        type: [Release]
         os: [ubuntu-latest]
-        exclude:
-          - platform: ANDROID
-            type: StaticBuild
-          - platform: TERMUX
-            type: StaticBuild
-          - platform: X64
-            type: StaticBuild
-          - platform: ANDROID
-            type: Box32
-          - platform: TERMUX
-            type: Box32
+        
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -183,6 +173,7 @@ jobs:
                    -DSTATICBUILD=${{ env.BOX64_STATICBUILD }}\
                    -DBOX32=${{ env.BOX64_BOX32 }}\
                    -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON\
+                   -DSD8G2=ON\
                    -DCI=${{ matrix.platform != 'ANDROID' }}
           make -j$(nproc) VERBOSE=1
 
