@@ -1988,7 +1988,7 @@ void fpu_pushcache(dynarec_rv64_t* dyn, int ninst, int s1, int not07)
     int start = not07 ? 8 : 0;
     int n = 0;
     for (int i = start; i < 8; i++)
-        if (dyn->e.ssecache[i].v != -1) ++n;
+        if (dyn->e.ssecache[i].v != -1 && !dyn->e.ssecache[i].vector) ++n;
     if(n) {
         MESSAGE(LOG_DUMP, "\tPush (float) XMM Cache (%d)------\n", n);
         for (int i = start; i < 8; ++i)
@@ -2039,7 +2039,7 @@ void fpu_pushcache(dynarec_rv64_t* dyn, int ninst, int s1, int not07)
     // TODO: save MMX registers too when we add support for MMX vector.
     n = 0;
     for (int i = start; i < 16; i++)
-        if (dyn->e.ssecache[i].v != -1) ++n;
+        if (dyn->e.ssecache[i].v != -1 && dyn->e.ssecache[i].vector) ++n;
     if (n) {
         MESSAGE(LOG_DUMP, "\tPush (vector) XMM Cache (%d)------\n", n);
         for (int i = start; i < 16; ++i)
@@ -2068,7 +2068,7 @@ void fpu_popcache(dynarec_rv64_t* dyn, int ninst, int s1, int not07)
     int start = not07 ? 8 : 0;
     int n = 0;
     for (int i = start; i < 8; i++)
-        if (dyn->e.ssecache[i].v != -1) ++n;
+        if (dyn->e.ssecache[i].v != -1 && !dyn->e.ssecache[i].vector) ++n;
     if (n) {
         MESSAGE(LOG_DUMP, "\tPop (float) XMM Cache (%d)------\n", n);
         for (int i = start; i < 8; ++i)
@@ -2109,7 +2109,7 @@ void fpu_popcache(dynarec_rv64_t* dyn, int ninst, int s1, int not07)
     // TODO: restore MMX registers too when we add support for MMX vector.
     n = 0;
     for (int i = start; i < 16; i++)
-        if (dyn->e.ssecache[i].v != -1) ++n;
+        if (dyn->e.ssecache[i].v != -1 && dyn->e.ssecache[i].vector) ++n;
     if (n) {
         MESSAGE(LOG_DUMP, "\tPop (vector) XMM Cache (%d)------\n", n);
         for (int i = start; i < 16; ++i)
@@ -2836,18 +2836,126 @@ void vector_loadmask(dynarec_rv64_t* dyn, int ninst, int vreg, uint64_t imm, int
             }
         } else if ((sew == VECTOR_SEW32 && vlmul == VECTOR_LMUL1) || (sew == VECTOR_SEW64 && vlmul == VECTOR_LMUL2)) {
             switch (imm) {
+                case 0b0000:
+                    VMV_S_X(vreg, xZR);
+                    return;
                 case 0b0001:
                     ADDI(s1, xZR, 1);
                     VMV_S_X(vreg, s1);
                     return;
+                case 0b0010:
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000000ULL);
+                    VMV_S_X(vreg, s1);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                case 0b0011:
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000001ULL);
+                    VMV_S_X(vreg, s1);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                case 0b0100: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    VMV_V_I(scratch, 1);
+                    VMV_S_X(vreg, xZR);
+                    VSLIDE1UP_VX(vreg, scratch, xZR, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
                 case 0b0101:
                     vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
                     VMV_V_I(vreg, 1);
                     vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
                     return;
+                case 0b0110: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    VMV_V_I(scratch, 1);
+                    MOV64x(s1, 0x100000000ULL);
+                    VSLIDE1UP_VX(vreg, scratch, s1, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b0111: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    VMV_V_I(scratch, 1);
+                    MOV64x(s1, 0x100000001ULL);
+                    VSLIDE1UP_VX(vreg, scratch, s1, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b1000: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000000ULL);
+                    VMV_V_X(scratch, s1);
+                    VMV_S_X(vreg, xZR);
+                    VSLIDE1UP_VX(vreg, scratch, xZR, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b1001: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000000ULL);
+                    VMV_V_X(scratch, s1);
+                    ADDI(s1, xZR, 1);
+                    VSLIDE1UP_VX(vreg, scratch, s1, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
                 case 0b1010:
                     vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
                     MOV64x(s1, 0x100000000ULL);
+                    VMV_V_X(vreg, s1);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                case 0b1011: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000000ULL);
+                    VMV_V_X(scratch, s1);
+                    MOV64x(s1, 0x100000001ULL);
+                    VSLIDE1UP_VX(vreg, scratch, s1, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b1100: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000001ULL);
+                    VMV_V_X(scratch, s1);
+                    VMV_S_X(vreg, xZR);
+                    VSLIDE1UP_VX(vreg, scratch, xZR, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b1101: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000001ULL);
+                    VMV_V_X(scratch, s1);
+                    ADDI(s1, xZR, 1);
+                    VSLIDE1UP_VX(vreg, scratch, s1, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b1110: {
+                    int scratch = fpu_get_scratch(dyn);
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000001ULL);
+                    VMV_V_X(scratch, s1);
+                    ADDI(s1, s1, -1);
+                    VSLIDE1UP_VX(vreg, scratch, s1, VECTOR_UNMASKED);
+                    vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
+                    return;
+                }
+                case 0b1111:
+                    vector_vsetvli(dyn, ninst, s1, VECTOR_SEW64, VECTOR_LMUL1, 1);
+                    MOV64x(s1, 0x100000001ULL);
                     VMV_V_X(vreg, s1);
                     vector_vsetvli(dyn, ninst, s1, sew, vlmul, multiple);
                     return;
@@ -2856,7 +2964,7 @@ void vector_loadmask(dynarec_rv64_t* dyn, int ninst, int vreg, uint64_t imm, int
         } else if ((sew == VECTOR_SEW16 && vlmul == VECTOR_LMUL1) || (sew == VECTOR_SEW32 && vlmul == VECTOR_LMUL2)) {
             if (imm > 255) abort();
             if (imm == 0) {
-                VXOR_VV(vreg, vreg, vreg, VECTOR_UNMASKED);
+                VMV_S_X(vreg, xZR);
                 return;
             }
             int low = imm & 0xF;
