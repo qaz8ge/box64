@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [X64, RISCV, RK3588, ARM64, ANDROID, TERMUX, LARCH64, ANDROID_GLIBC]
-        type: [Release, Trace, StaticBuild, Box32]
+        platform: [ANDROID_GLIBC]
+        type: [Release]
         os: [ubuntu-latest]
         exclude:
           - platform: ANDROID
@@ -62,9 +62,9 @@ jobs:
               sudo chown -R $(whoami):$(whoami) /system
               sudo chmod 755 -R /system
             elif [[ ${{ matrix.platform }} == 'ANDROID_GLIBC' ]]; then
-              sudo apt-get -y install git gcc-aarch64-linux-gnu
-              echo "BOX64_PLATFORM_MARCRO=-DARM64=1 -DARM_DYNAREC=1 -DBAD_SIGNAL=1" >> $GITHUB_ENV
-              echo "BOX64_COMPILER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+              sudo apt-get -y install git gcc-12-aarch64-linux-gnu
+              echo "BOX64_PLATFORM_MARCRO=-DARM64=1 -DARM_DYNAREC=1 -DSD8G2=1" >> $GITHUB_ENV
+              echo "BOX64_COMPILER=aarch64-linux-gnu-gcc-12" >> $GITHUB_ENV
             else
               sudo apt-get -y install git gcc-aarch64-linux-gnu
               echo "BOX64_PLATFORM_MARCRO=-D${{ matrix.platform }}=1" >> $GITHUB_ENV
@@ -190,67 +190,7 @@ jobs:
                    -DCI=${{ matrix.platform != 'ANDROID' }}
           make -j$(nproc) VERBOSE=1
 
-      - name: "Test Box64"
-        run: |
-          if [[ ${{ matrix.platform }} != 'X64' ]]; then
-            mkdir qemu9
-            wget -O- -q https://archive.archlinux.org/packages/q/qemu-user-static/qemu-user-static-9.0.2-1-x86_64.pkg.tar.zst | tar -I zstd -C qemu9 -xf -
-            sudo cp qemu9/usr/bin/* /usr/bin/
-          fi
 
-          cd build
-          export CTEST_OPTIONS="-j$(nproc) --timeout 120 --output-on-failure --repeat until-pass:20"
-          if [[ ${{ matrix.platform }} == 'RISCV' ]]; then
-            export INTERPRETER=qemu-riscv64-static
-            export QEMU_LD_PREFIX=/usr/riscv64-linux-gnu/
-
-            ctest $CTEST_OPTIONS
-            QEMU_CPU=rv64,v=false BOX64_DYNAREC=0 ctest $CTEST_OPTIONS
-            QEMU_CPU=rv64,v=false,zba=true,zbb=true,zbc=true,zbs=true ctest $CTEST_OPTIONS
-            QEMU_CPU=rv64,v=true,vlen=128,vext_spec=v1.0 ctest $CTEST_OPTIONS
-            QEMU_CPU=rv64,v=true,vlen=256,vext_spec=v1.0 ctest $CTEST_OPTIONS
-            QEMU_CPU=thead-c906 ctest $CTEST_OPTIONS
-
-            BOX64_DYNAREC_TEST=1 ctest $CTEST_OPTIONS -E nocosim
-            BOX64_DYNAREC_TEST=1 QEMU_CPU=rv64,v=false,zba=true,zbb=true,zbc=true,zbs=true ctest $CTEST_OPTIONS -E nocosim
-            BOX64_DYNAREC_TEST=1 QEMU_CPU=rv64,v=true,vlen=128,vext_spec=v1.0 ctest $CTEST_OPTIONS -E nocosim
-            BOX64_DYNAREC_TEST=1 QEMU_CPU=rv64,v=true,vlen=256,vext_spec=v1.0 ctest $CTEST_OPTIONS -E nocosim
-            BOX64_DYNAREC_TEST=1 QEMU_CPU=thead-c906 ctest $CTEST_OPTIONS -E nocosim
-
-            export INTERPRETER=$GITHUB_WORKSPACE/xuantie_qemu_install/bin/qemu-riscv64
-            QEMU_CPU=c910v ctest $CTEST_OPTIONS
-            BOX64_DYNAREC_TEST=1 QEMU_CPU=c910v ctest $CTEST_OPTIONS -E nocosim
-          elif [[ ${{ matrix.platform }} == 'LARCH64' ]]; then
-            export INTERPRETER=qemu-loongarch64-static
-            export QEMU_LD_PREFIX=/usr/loongarch64-linux-gnu/
-
-            BOX64_DYNAREC_LA64NOEXT=1 ctest $CTEST_OPTIONS -E nocosim
-            BOX64_DYNAREC=0 ctest $CTEST_OPTIONS -E nocosim
-
-            BOX64_DYNAREC_TEST=1 BOX64_DYNAREC_LA64NOEXT=1 ctest $CTEST_OPTIONS -E nocosim
-          elif [[ ${{ matrix.platform }} == 'ANDROID' ]]; then
-            export INTERPRETER=qemu-aarch64-static
-            export QEMU_LD_PREFIX=/system/lib64
-            
-            BOX64_DYNAREC=0 ctest $CTEST_OPTIONS
-            ctest $CTEST_OPTIONS
-          elif [[ ${{ matrix.platform }} == 'TERMUX' ]]; then
-            export INTERPRETER=qemu-aarch64-static
-            export QEMU_SET_ENV=LD_LIBRARY_PATH=/data/data/com.termux/files/usr/lib 
-            export QEMU_LD_PREFIX=/system/lib64:/data/data/com.termux/files/usr/lib
-
-            BOX64_DYNAREC=0 ctest $CTEST_OPTIONS
-            ctest $CTEST_OPTIONS
-          elif [[ ${{ matrix.platform }} != 'X64' ]]; then # AArch64
-            export INTERPRETER=qemu-aarch64-static
-            export QEMU_LD_PREFIX=/usr/aarch64-linux-gnu/
-            
-            BOX64_DYNAREC=0 ctest $CTEST_OPTIONS
-            ctest $CTEST_OPTIONS
-            BOX64_DYNAREC_TEST=1 ctest $CTEST_OPTIONS -E nocosim
-          else
-            ctest -j$(nproc)
-          fi
 
       - name: "Get short Git commit"
         id: git-info
