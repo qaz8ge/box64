@@ -41,6 +41,7 @@ option(CI "Set to ON if running in CI" ${CI})
 option(WITH_MOLD "Set to ON to use with mold" ${WITH_MOLD})
 option(BOX32 "Set to ON to add Linux 32bits support (experimental, do not use)" ${BOX32})
 option(BOX32_BINFMT "Also setup binfmt integration for box32" ${BOX32_BINFMT})
+option(LARCH64_ABI_1 "Set to ON if building for Loongarch64 ABI 1.0 system" ${LARCH64_ABI_1})
 
 if(TERMUX)
     set(TERMUX_PATH "/data/data/com.termux/files")
@@ -52,6 +53,10 @@ if(LARCH64)
     set(ARM_DYNAREC OFF CACHE BOOL "")
     set(RV64_DYNAREC OFF CACHE BOOL "")
     set(LARCH64_DYNAREC ON CACHE BOOL "")
+    if(LARCH64_ABI_1)
+        message(STATUS "Build for Loongarch64 ABI 1.0 system")
+        add_definitions(-DLA64_ABI_1)
+    endif()
 endif()
 if(RV64)
     set(LD80BITS OFF CACHE BOOL "")
@@ -816,6 +821,7 @@ if(BOX32)
         "${BOX64_ROOT}/src/wrapped32/wrappedfreetype.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedfontconfig.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibx11.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibxdamage.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibxext.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibxfixes.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibxrender.c"
@@ -831,6 +837,7 @@ if(BOX32)
         "${BOX64_ROOT}/src/wrapped32/wrappedudev1.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibuuid.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedtcmallocminimal.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedcairo.c"
     )
     endif()
     string(REPLACE ".c" "_private.h" MODROOT ${BOX64_ROOT})

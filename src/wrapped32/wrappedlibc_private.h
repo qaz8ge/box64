@@ -170,8 +170,8 @@ GOW(__connect, iEipu)
 // copysign // Weak
 // copysignf    // Weak
 // copysignl    // Weak
-//GOW(creat, iEpu)
-//GO(creat64, iEpu)
+GOW(creat, iEpu)
+GO(creat64, iEpu)
 // create_module    // Weak
 GO(ctermid, tEp)
 GOM(ctime, pEErl_)
@@ -195,9 +195,9 @@ GOM(__cxa_thread_atexit_impl, iEEppp) //%%
 // daemon
 DATAV(daylight, 4)
 // __daylight   // type B
-GOW(dcgettext, pEppi)
-GO(__dcgettext, pEppi)
-//GOW(dcngettext, pEpppui)
+GOW(dcgettext, tEppi)
+GO(__dcgettext, tEppi)
+GOW(dcngettext, tEpppLi)
 // __default_morecore
 // __default_rt_sa_restorer_v1
 // __default_rt_sa_restorer_v2
@@ -360,7 +360,7 @@ GOW(finitef, iEf)
 // finitel  // Weak
 // __finitel
 // __flbf
-//GO(flistxattr, iEipu)
+GO(flistxattr, iEipL)
 GOW(flock, iEii)
 GOW(flockfile, vFS)
 GOW(_flushlbf, vEv)
@@ -436,7 +436,7 @@ GOW(ftruncate64, iEiI)
 //GOM(fts_read, pEEp)      //%%
 // fts_set
 //GOM(ftw, iEEppi)         //%%
-//GOM(ftw64, iEEppi)       //%%
+GOM(ftw64, iEEppi)       //%%
 GOW(funlockfile, vFS)
 GOM(futimens, iEEip)
 GOWM(futimes, iEEip)
@@ -562,7 +562,7 @@ GOM(getprotobyname, pEEp)
 GOW(getpt, iEv)
 // getpublickey
 // getpw    // Weak
-//GO(getpwent, pEv)
+GOM(getpwent, pEEv)
 // getpwent_r
 GOM(getpwnam, pEEp)
 GOM(getpwnam_r, iEEpppLp)
@@ -583,7 +583,7 @@ GOW(getrusage, iEiBLLLLLLLLLLLLLLLLLL_)
 //GOW(gets, pEp)
 // __gets_chk
 // getsecretkey
-//GO(getservbyname, pEpp)
+GOM(getservbyname, pEEpp)
 //GO(getservbyname_r, iEppppup)
 //GO(getservbyport, pEip)
 //GO(getservbyport_r, iEipppup)
@@ -667,11 +667,11 @@ GO(iconv_open, pEpp)
 //GO(if_freenameindex, vEp)
 //GO(if_indextoname, pEup)
 //GO(if_nameindex, pEv)
-//GO(if_nametoindex, uEp)
+GO(if_nametoindex, uEp)
 // imaxabs  // Weak
 GOWS(imaxdiv, pEpII) //%%
 DATA(in6addr_any, 16)  // type R
-//DATA(in6addr_loopback, 16) // type R
+DATA(in6addr_loopback, 16) // type R
 // inb  // Weak
 //GOW(index, pEpi)
 // inet6_opt_append
@@ -724,7 +724,7 @@ GO(inotify_rm_watch, iEii)
 //DATA(_IO_2_1_stdout_, 152)
 //GO(_IO_adjust_column, uEupi)
 // _IO_adjust_wcolumn
-GO(ioctl, iEiip)   //the vararg is just to have optional arg of various type, but only 1 arg
+GO(ioctl, iEiLp)   //the vararg is just to have optional arg of various type, but only 1 arg
 //GO(_IO_default_doallocate, iES)
 //GO(_IO_default_finish, vESi)
 //GO(_IO_default_pbackfail, iESi)
@@ -995,8 +995,8 @@ GOW(ldexpl, DFDi)
 GOW2(ldexpl, KFKi, ldexp)
 #endif
 GOS(ldiv, pEEpii)               //%% return a struct, so address of stuct is on the stack, as a shadow 1st element
-//GOM(lfind, pEEpppLp)            //%%
-//GO(lgetxattr, iEpppu)
+GOM(lfind, pEEppbL_Lp)            //%%
+GO(lgetxattr, iEpppL)
 GOM(__libc_alloca_cutoff, iEEL) //%%
 // __libc_allocate_rtsig
 // __libc_allocate_rtsig_private
@@ -1037,10 +1037,10 @@ GO2(__libc_sigaction, iEEipp, my32_sigaction) //%%
 GOW(link, iEpp)
 //GO(linkat, iEipipi)
 GOW(listen, iEii)
-//GO(listxattr, iEppu)
+GO(listxattr, iEppL)
 // llabs
 // lldiv
-//GO(llistxattr, iEppu)
+GO(llistxattr, iEppL)
 // llseek   // Weak
 // loc1 // type B
 // loc2 // type B
@@ -1056,11 +1056,11 @@ GOM(__longjmp_chk, vEEpi)   //%%
 GO(lrand48, lEv)
 // lrand48_r
 //GO(lremovexattr, iEpp)
-//GOM(lsearch, pEEpppLp)      //%%
+GOM(lsearch, pEEppbL_Lp)      //%%
 GOW(lseek, lEili)
 // __lseek  // Weak
 GOW(lseek64, IEiIi)
-//GO(lsetxattr, iEpppui)
+GO(lsetxattr, iEpppLi)
 //GO(lutimes, iEpp)
 GOM(__lxstat, iEEipp)       //%%
 GOM(__lxstat64, iEEipp)     //%%
@@ -1162,7 +1162,7 @@ GOW(newlocale, aEipa)
 GO(__newlocale, aEipa)
 // nfsservctl
 //GOM(nftw, iEEppii)       //%%
-//GOM(nftw64, iEEppii)     //%%
+GOM(nftw64, iEEppii)     //%%
 //GOW(ngettext, pEppu)
 GO(nice, iEi)
 // _nl_default_dirname   // type R
@@ -1380,7 +1380,7 @@ GO(recv, lEipLi)
 GO(__recv_chk, iEipLLi)
 GOW(recvfrom, lEipLipp)
 // __recvfrom_chk
-//GOM(recvmmsg, iEEipuup)    //%% actual recvmmsg is glibc 2.12+. The syscall is Linux 2.6.33+, so use syscall...
+GOM(recvmmsg, iEEipuurLL_)
 GOWM(recvmsg, lEEipi)
 // re_exec  // Weak
 GOWM(regcomp, iEEppi)
@@ -1408,8 +1408,8 @@ GOW(re_set_syntax, LEL)
 GO(__res_iclose, vEpi)
 GO(__res_init, iEv)
 //GO(__res_maybe_init, iEpi)
-//GO(__res_nclose, vEp)
-//GO(__res_ninit, iEp)
+GO(__res_nclose, vEp)
+GO(__res_ninit, iEp)
 //DATA(__resp, 4)
 // __res_randomid
 GOM(__res_state, pEEv)
@@ -1480,7 +1480,7 @@ GOW(send, lEipLi)
 GO(sendfile, lEiibl_L)
 GO(sendfile64, lEiipL)
 GOWM(sendmsg, lEEipi)
-//GOM(__sendmmsg, iEEipuu)    //%% actual __sendmmsg is glibc 2.14+. The syscall is Linux 3.0+, so use syscall...
+GOM(sendmmsg, iEEipuu)
 GOW(sendto, lEipLipu)
 // setaliasent
 GOW(setbuf, vESp)
@@ -1540,12 +1540,12 @@ GOW(setuid, iEu)
 GOW(setutent, vEv)
 // setutxent
 GOW(setvbuf, iESpiL)
-//GO(setxattr, iEpppui)
+GO(setxattr, iEpppLi)
 // sgetspent
 // sgetspent_r  // Weak
-GOW(shmat, pEipi)
+GOWM(shmat, pEEipi)
 GOW(shmctl, iEiip)
-GOW(shmdt, iEp)
+GOWM(shmdt, iEEp)
 GOW(shmget, iEiLi)
 GOW(shutdown, iEii)
 GOWM(sigaction, iEEipp)    //%%
@@ -1596,7 +1596,7 @@ GOM(__snprintf_chk, iEEpLiipV) //%%
 // sockatmark
 GOW(socket, iEiii)
 GOW(socketpair, iEiiip)
-//GO(splice, iEipipuu)
+GO(splice, iEipipLu)
 GOM(sprintf, iEEppV) //%%
 GOM(__sprintf_chk, iEEpiipV) //%%
 // sprofil  // Weak
@@ -1722,8 +1722,8 @@ GO(strtoll, IEpBp_i)
 //GO(__strtol_l, lEppiip)
 //GOW(strtol_l, lEppiip)
 GO(__strtoll_internal, IEpBp_ii)
-//GO(__strtoll_l, IEppip)
-//GOW(strtoll_l, IEppip)
+GO(__strtoll_l, IEpBp_ia)
+GOW(strtoll_l, IEpBp_ia)
 //GOW(strtoq, IEppi)  // is that ok?
 GOM(strtoul, LEpBp_i)   //%%,noE
 GO2(__strtoul_internal, LEpBp_ii, my32_strtoul) //%%,noE
@@ -1731,8 +1731,8 @@ GO(strtoull, UEpBp_i)
 //GO(__strtoul_l, uEppip)
 //GOW(strtoul_l, LEppip)
 GO(__strtoull_internal, UEpBp_ii)
-//GO(__strtoull_l, UEppip)
-//GOW(strtoull_l, UEppip)
+GO(__strtoull_l, UEpBp_ia)
+GOW(strtoull_l, UEpBp_ia)
 //GO(strtoumax, UEppi)
 //GOW(strtouq, UEppi) // ok?
 GOW(strverscmp, iEpp)
@@ -1813,9 +1813,9 @@ GO(tcsetpgrp, iEii)
 // tee
 //GO(telldir, iEp)
 GO(tempnam, pEpp)
-//GOW(textdomain, pEp)
+GOW(textdomain, tEp)
 // tfind    // Weak
-GO(time, LErl_)
+GO(time, LEBL_)
 GO(timegm, LEriiiiiiiiilt_)
 // timelocal    // Weak
 GO(timerfd_create, iEii)
@@ -2020,7 +2020,7 @@ GO(wcstoull, UEpBp_i)
 // wcstouq  // Weak
 // wcswcs   // Weak
 //GO(wcswidth, iEpu)
-//GO(wcsxfrm, uEppu)
+GO(wcsxfrm, LEppL)
 //GOW(wcsxfrm_l, uEppup)
 GO(__wcsxfrm_l, LEppLa)
 GO(wctob, iEu)

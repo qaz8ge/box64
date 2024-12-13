@@ -1451,6 +1451,13 @@ EXPORT int my32_XFilterEvent(x64emu_t* emu, my_XEvent_32_t* evt, XID window)
     return my->XFilterEvent(&event, window);
 }
 
+EXPORT int my32_XPutBackEvent(x64emu_t* emu, void* dpy, my_XEvent_32_t* evt)
+{
+    my_XEvent_t event = {0};
+    unconvertXEvent(&event, evt);
+    return my->XPutBackEvent(dpy, &event);
+}
+
 void WrapXImage(void* d, void* s)
 {
     XImage *src = s;
@@ -1981,6 +1988,13 @@ EXPORT void my32_XSetWMProperties(x64emu_t* emu, void* dpy, XID window, void* wi
             argv_l[i] = from_ptrv(argv[i]);
     }
     my->XSetWMProperties(dpy, window, window_name?(&window_name_l):NULL, icon_name?(&icon_name_l):NULL, argv?argv_l:NULL, argc, normal_hints?(&wm_size_l):NULL, wm_hints?(&wm_hints_l):NULL, class_hints?(&class_hints_l):NULL);
+}
+
+EXPORT void my32_XSetWMSizeHints(x64emu_t* emu, void* dpy, XID window, void* hints, XID atom)
+{
+    int hints_l[17+2] = {0};
+    convert_XSizeHints_to_64(&hints_l, hints);
+    my->XSetWMSizeHints(dpy, window, &hints_l, atom);
 }
 
 EXPORT void my32_Xutf8SetWMProperties(x64emu_t* emu, void* dpy, XID window, void* window_name, void* icon_name, ptr_t* argv, int argc, void* normal_hints, my_XWMHints_32_t* wm_hints, ptr_t* class_hints)

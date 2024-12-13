@@ -36,6 +36,7 @@ typedef int32_t (*iFXlp_t)(void*, intptr_t, void*);
 typedef int32_t (*iFXLp_t)(void*, uintptr_t, void*);
 typedef uintptr_t (*LFXii_t)(void*, int32_t, int32_t);
 typedef void* (*pFXip_t)(void*, int32_t, void*);
+typedef void (*vFXLpL_t)(void*, uintptr_t, void*, uintptr_t);
 typedef int32_t (*iFXLip_t)(void*, uintptr_t, int32_t, void*);
 typedef int32_t (*iFXLlp_t)(void*, uintptr_t, intptr_t, void*);
 typedef int32_t (*iFXLLp_t)(void*, uintptr_t, uintptr_t, void*);
@@ -90,6 +91,7 @@ typedef uintptr_t (*LFXLiiuuuiupLp_t)(void*, uintptr_t, int32_t, int32_t, uint32
 	GO(XGetEventData, iFXp_t) \
 	GO(XNextEvent, iFXp_t) \
 	GO(XPeekEvent, iFXp_t) \
+	GO(XPutBackEvent, iFXp_t) \
 	GO(XLookupKeysym, LFpi_t) \
 	GO(XVaCreateNestedList, pFiV_t) \
 	GO(XCreateIC, pFpV_t) \
@@ -113,6 +115,7 @@ typedef uintptr_t (*LFXLiiuuuiupLp_t)(void*, uintptr_t, int32_t, int32_t, uint32
 	GO(XESetCloseDisplay, pFXip_t) \
 	GO(XESetEventToWire, pFXip_t) \
 	GO(XESetWireToEvent, pFXip_t) \
+	GO(XSetWMSizeHints, vFXLpL_t) \
 	GO(XCheckTypedWindowEvent, iFXLip_t) \
 	GO(XCheckWindowEvent, iFXLlp_t) \
 	GO(XWindowEvent, iFXLlp_t) \
