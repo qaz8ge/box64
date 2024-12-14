@@ -32,9 +32,10 @@ typedef void* (*pEu_t)(uint32_t);
 typedef void* (*pFu_t)(uint32_t);
 typedef void* (*pEL_t)(uintptr_t);
 typedef void* (*pFL_t)(uintptr_t);
-typedef void* (*pFp_t)(void*);
 typedef void* (*pEp_t)(void*);
+typedef void* (*pFp_t)(void*);
 typedef void* (*pES_t)(void*);
+typedef char* (*tEp_t)(void*);
 typedef int32_t (*iEbp__t)(struct_p_t*);
 typedef void* (*pErl__t)(struct_l_t*);
 typedef void* (*pEriiiiiiiiilt__t)(struct_iiiiiiiiilt_t*);
@@ -82,6 +83,7 @@ typedef intptr_t (*lEppL_t)(void*, void*, uintptr_t);
 typedef void* (*pEipi_t)(int32_t, void*, int32_t);
 typedef void* (*pEpii_t)(void*, int32_t, int32_t);
 typedef void* (*pEpII_t)(void*, int64_t, int64_t);
+typedef void* (*pFpui_t)(void*, uint32_t, int32_t);
 typedef void* (*pEpLL_t)(void*, uintptr_t, uintptr_t);
 typedef void* (*pEppi_t)(void*, void*, int32_t);
 typedef double (*KEpBp_a_t)(void*, struct_p_t*, void*);
@@ -131,6 +133,7 @@ typedef void* (*pEpLiiiI_t)(void*, uintptr_t, int32_t, int32_t, int32_t, int64_t
 typedef void* (*pEpLiiil_t)(void*, uintptr_t, int32_t, int32_t, int32_t, intptr_t);
 typedef int32_t (*iEpippppp_t)(void*, int32_t, void*, void*, void*, void*, void*);
 typedef int32_t (*iEpLiLppp_t)(void*, uintptr_t, int32_t, uintptr_t, void*, void*, void*);
+typedef int32_t (*iFpuippupp_t)(void*, uint32_t, int32_t, void*, void*, uint32_t, void*, void*);
 
 #define SUPER() ADDED_FUNCTIONS() \
 	GO(freeaddrinfo, vEp_t) \
@@ -158,12 +161,14 @@ typedef int32_t (*iEpLiLppp_t)(void*, uintptr_t, int32_t, uintptr_t, void*, void
 	GO(_ZGTtnaj, pFu_t) \
 	GO(_ZGTtnaX, pFL_t) \
 	GO(_ZGTtnam, pFL_t) \
-	GO(gethostbyname, pFp_t) \
+	GO(getgrnam, pEp_t) \
 	GO(getprotobyname, pEp_t) \
 	GO(getpwnam, pEp_t) \
 	GO(gmtime, pEp_t) \
 	GO(localtime, pEp_t) \
+	GO(gethostbyname, pFp_t) \
 	GO(getmntent, pES_t) \
+	GO(__secure_getenv, tEp_t) \
 	GO(getifaddrs, iEbp__t) \
 	GO(ctime, pErl__t) \
 	GO(asctime, pEriiiiiiiiilt__t) \
@@ -194,6 +199,7 @@ typedef int32_t (*iEpLiLppp_t)(void*, uintptr_t, int32_t, uintptr_t, void*, void
 	GO(gmtime_r, pEpp_t) \
 	GO(localtime_r, pEpp_t) \
 	GO(vsyslog, vEipp_t) \
+	GO(syslog, vEipV_t) \
 	GO(_ITM_addUserCommitAction, vEpup_t) \
 	GO(posix_spawn_file_actions_adddup2, iEpii_t) \
 	GO(regcomp, iEppi_t) \
@@ -207,6 +213,7 @@ typedef int32_t (*iEpLiLppp_t)(void*, uintptr_t, int32_t, uintptr_t, void*, void
 	GO(sendmsg, lEipi_t) \
 	GO(writev, lEipi_t) \
 	GO(shmat, pEipi_t) \
+	GO(gethostbyaddr, pFpui_t) \
 	GO(__realpath_chk, pEppi_t) \
 	GO(__strtold_l, KEpBp_a_t) \
 	GO(strtold_l, KEpBp_a_t) \
@@ -231,6 +238,7 @@ typedef int32_t (*iEpLiLppp_t)(void*, uintptr_t, int32_t, uintptr_t, void*, void
 	GO(gethostbyname_r, iFpppupp_t) \
 	GO(posix_spawn, iEpppppp_t) \
 	GO(process_vm_readv, lEipLpLL_t) \
-	GO(process_vm_writev, lEipLpLL_t)
+	GO(process_vm_writev, lEipLpLL_t) \
+	GO(gethostbyaddr_r, iFpuippupp_t)
 
 #endif // __wrappedlibcTYPES32_H_

@@ -494,20 +494,20 @@ GOW(getgid, uEv)
 // getgrent_r
 //GO(getgrgid, pEu)
 GOM(getgrgid_r, iEEuppLp)
-//GO(getgrnam, pEp)
+GOM(getgrnam, pEEp)
 GOM(getgrnam_r, iEEpppLp)
 GO(getgrouplist, iEpipp)
 GOW(getgroups, iEip)
 // __getgroups_chk
-//GO(gethostbyaddr, pFpui)  // change h_errno only
-GO(gethostbyaddr_r, iFpuippupp)
+GOM(gethostbyaddr, pFEpui)
+GOM(gethostbyaddr_r, iFEpuippupp)
 GOM(gethostbyname, pFEp)
 //GO(gethostbyname2, pFpi)
 //GO(gethostbyname2_r, iFpippupp)
 GOM(gethostbyname_r, iFEpppupp)
 //GO(gethostent, pFv)
 //GO(gethostent_r, iFppupp)
-// gethostid
+GO(gethostid, LFv)
 GOW(gethostname, iEpL)
 // __gethostname_chk
 GOM(getifaddrs, iEEbp_)
@@ -709,7 +709,7 @@ GO(inet_pton, iEipp)
 // initstate    // Weak
 //GOW(initstate_r, iEupup)
 // inl  // Weak
-// innetgr
+GO(innetgr, iEpppp)
 GO(inotify_add_watch, iEipu)
 GO(inotify_init, iEv)
 GO(inotify_init1, iEi)
@@ -1128,7 +1128,7 @@ GO(mkstemp64, iEp)
 //GO(mktemp, pEp)
 GO(mktime, LEbiiiiiiiiilt_)
 GO(mlock, iEpL)
-//GO(mlockall, iEi)
+GO(mlockall, iEi)
 GOM(mmap, pEEpLiiil)    //%%
 GOM(mmap64, pEEpLiiiI)  //%%
 // modf // Weak
@@ -1151,7 +1151,7 @@ GOWM(mremap, pEEpLLiN)	//%% 5th hidden paramerer "void* new_addr" if flags is MR
 GOW(msync, iEpLi)
 // mtrace
 GO(munlock, iEpL)
-//GO(munlockall, iEv)
+GO(munlockall, iEv)
 GOM(munmap, iEEpL)       //%%
 // muntrace
 GOWM(nanosleep, iErLL_BLL_)	 //%%,noE
@@ -1239,7 +1239,7 @@ GOW(pathconf, lEpi)
 GOW(pause, iEv)
 GO(pclose, iES)
 GO(perror, vEp)
-// personality  // Weak
+GOW(personality, iFL)
 GOW(pipe, iEp)
 // __pipe
 GOW(pipe2, iEpO) // assuming this works the same as pipe, so pointer for array of 2 int
@@ -1256,18 +1256,18 @@ GO(posix_fadvise, iEilli)
 GO(posix_fadvise64, iEiIIi)
 GO(posix_fallocate, iEill)
 GO(posix_fallocate64, iEiII)
-// posix_madvise
+GO(posix_madvise, iEpLi)
 GOW(posix_memalign, iEBp_LL)
 // posix_openpt // Weak
 GOM(posix_spawn, iEEpppppp)
-// posix_spawnattr_destroy
+GO(posix_spawnattr_destroy, iFp)
 // posix_spawnattr_getflags
 // posix_spawnattr_getpgroup
 // posix_spawnattr_getschedparam
 // posix_spawnattr_getschedpolicy
 // posix_spawnattr_getsigdefault
 // posix_spawnattr_getsigmask
-// posix_spawnattr_init
+GO(posix_spawnattr_init, iFp)
 // posix_spawnattr_setflags
 // posix_spawnattr_setpgroup
 // posix_spawnattr_setschedparam
@@ -1449,8 +1449,8 @@ GO(__sched_cpucount, iEup)
 //GO(__sched_cpufree, vEp)
 GO(sched_getaffinity, iEiup)
 GO(sched_getcpu, iEv)
-//GO(__sched_getparam, iEip)
-//GOW(sched_getparam, iEip)
+GO(__sched_getparam, iEip)
+GOW(sched_getparam, iEip)
 GO(__sched_get_priority_max, iEi)
 GOW(sched_get_priority_max, iEi)
 GO(__sched_get_priority_min, iEi)
@@ -1464,7 +1464,7 @@ GO(__sched_setscheduler, iEiip)
 GOW(sched_setscheduler, iEiip)
 GO(__sched_yield, iEv)
 GOW(sched_yield, iEv)
-GO(__secure_getenv, tEp)
+GO2(__secure_getenv, tEp, secure_getenv)
 GO(secure_getenv, tEp)
 // seed48
 // seed48_r // Weak
@@ -1654,8 +1654,8 @@ GOW(strdup, pEp)
 GO(__strdup, pEp)
 GO(strerror, tEi)
 GO(strerror_l, pEia)
-GO(__strerror_r, pEipL)
-GOW(strerror_r, pEipL)
+GO(__strerror_r, tEipL)
+GOW(strerror_r, tEipL)
 //GO(strfmon, lEpLpppppppppp) //vaarg, probably needs align, there are just double...
 // __strfmon_l
 // strfmon_l    // Weak
@@ -1724,7 +1724,7 @@ GO(strtoll, IEpBp_i)
 GO(__strtoll_internal, IEpBp_ii)
 GO(__strtoll_l, IEpBp_ia)
 GOW(strtoll_l, IEpBp_ia)
-//GOW(strtoq, IEppi)  // is that ok?
+GOW(strtoq, IEppi)  // is that ok?
 GOM(strtoul, LEpBp_i)   //%%,noE
 GO2(__strtoul_internal, LEpBp_ii, my32_strtoul) //%%,noE
 GO(strtoull, UEpBp_i)
@@ -1734,7 +1734,7 @@ GO(__strtoull_internal, UEpBp_ii)
 GO(__strtoull_l, UEpBp_ia)
 GOW(strtoull_l, UEpBp_ia)
 //GO(strtoumax, UEppi)
-//GOW(strtouq, UEppi) // ok?
+GOW(strtouq, UEppi) // ok?
 GOW(strverscmp, iEpp)
 // __strverscmp
 GO(strxfrm, uEppL)
@@ -1789,7 +1789,7 @@ GO2(__sysconf, lEEi, my_sysconf)
 //DATA(_sys_errlist, 4)
 //DATA(sys_errlist, 4)
 GOM(sysinfo, iEp)   //%noE
-//GO2(syslog, vEipV, vsyslog)
+GOM(syslog, vEEipV)
 GOM(__syslog_chk, vEEiipV)
 //DATA(_sys_nerr, 4)    // type R
 //DATA(sys_nerr, 4) // type R
@@ -1918,7 +1918,7 @@ GOWM(__vsnprintf, iEEpLpp)       //%%
 GOM(__vsnprintf_chk, iEEpLiipp)  //%%
 GOWM(vsprintf, iEEppp)            //%%
 GOM(__vsprintf_chk, iEEpiLpp)     //%% 
-//GOM(vsscanf, iEEppp) //%%
+GOM(vsscanf, iEEppp) //%%
 // __vsscanf    // Weak
 GOWM(vswprintf, iEEpLpp)         //%%
 GOWM(__vswprintf, iEEpLpp)         //%%
