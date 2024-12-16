@@ -80,7 +80,7 @@ int box64_dynarec_bigblock = 1;
 int box64_dynarec_forward = 128;
 int box64_dynarec_strongmem = 0;
 int box64_dynarec_weakbarrier = 1;
-int box64_dynarec_pause = 3;
+int box64_dynarec_pause = 0;
 int box64_dynarec_x87double = 0;
 int box64_dynarec_div0 = 0;
 int box64_dynarec_fastnan = 1;
@@ -2263,7 +2263,7 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
     }
     // check if file exist
     if(!my_context->argv[0] || !FileExist(my_context->argv[0], IS_FILE)) {
-        printf_log(LOG_NONE, "Error: File is not found. (check BOX64_PATH)\n");
+        printf_log(LOG_NONE, "Error: File is not found. (%s)\n", my_context->argv[0]);
         free_contextargv();
         FreeBox64Context(&my_context);
         FreeCollection(&ld_preload);

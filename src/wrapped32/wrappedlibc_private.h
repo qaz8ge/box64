@@ -2,6 +2,8 @@
 #error Meh...
 #endif
 
+//DATA not M cannot work on libc wbecause it's loaded in high memory
+
 // FILE* is S
 // locale_t needs special handling, with to_locale / from_locale (and is a / A)
 // struct utimbuf is: LL
@@ -417,6 +419,7 @@ GO(__fsetlocking, iESi)
 //GO(fsetpos, iEpp)
 //GO(fsetpos64, iEpp)
 GO(fsetxattr, iEippLi)
+GOM(fstat, iFip)    //%%,noE
 GOWM(fstatfs, iEip) //%%,noE
 GOWM(fstatfs64, iEip)    //%%,noE
 GOM(fstatvfs, iEEip)
@@ -670,8 +673,8 @@ GO(iconv_open, pEpp)
 GO(if_nametoindex, uEp)
 // imaxabs  // Weak
 GOWS(imaxdiv, pEpII) //%%
-DATA(in6addr_any, 16)  // type R
-DATA(in6addr_loopback, 16) // type R
+DATAM(in6addr_any, 16)  // type R
+DATAM(in6addr_loopback, 16) // type R
 // inb  // Weak
 //GOW(index, pEpi)
 // inet6_opt_append
@@ -894,7 +897,7 @@ GOW(isnanf, iEf)
 GO(__isnanf, iEf)
 // isnanl   // Weak
 // __isnanl
-GO2(__isoc99_fscanf, iEEppV, my32_fscanf)
+GO2(__isoc99_fscanf, iEESpV, my32_fscanf)
 // __isoc99_fwscanf
 // __isoc99_scanf
 GOM(__isoc99_sscanf, iEEppV)  //%%
@@ -906,6 +909,14 @@ GOM(__isoc99_sscanf, iEEppV)  //%%
 // __isoc99_vswscanf
 // __isoc99_vwscanf
 // __isoc99_wscanf
+GO2(__isoc23_fscanf, iEESpV, my32_fscanf)
+GO2(__isoc23_sscanf, iEEppV, my32_sscanf)
+GO2(__isoc23_vsscanf, iEEppp, my32_vsscanf)
+GO2(__isoc23_wcstol, lEpBp_i, my32_wcstol)
+GO2(__isoc23_strtoll, IEpBp_i, strtoll)
+GO2(__isoc23_strtoull, UEpBp_i, strtoull)
+GO2(__isoc23_strtol, lEpBp_i, my32_strtol)
+GO2(__isoc23_strtoul, LEpBp_i, my32_strtoul)
 GO(isprint, iEi)
 // __isprint_l
 // isprint_l    // Weak
@@ -1149,11 +1160,11 @@ GOWM(mremap, pEEpLLiN)	//%% 5th hidden paramerer "void* new_addr" if flags is MR
 //GOW(msgrcv, lEipLli)
 //GOW(msgsnd, iEipLi)
 GOW(msync, iEpLi)
-// mtrace
+GO(mtrace, vFv)
 GO(munlock, iEpL)
 GO(munlockall, iEv)
 GOM(munmap, iEEpL)       //%%
-// muntrace
+GO(muntrace, vFv)
 GOWM(nanosleep, iErLL_BLL_)	 //%%,noE
 // __nanosleep  // Weak
 // netname2host
@@ -1296,8 +1307,8 @@ GOM(__printf_chk, iEEipV) //%%
 // printf_size_info
 // profil   // Weak
 // __profile_frequency
-//DATAM(__progname, 4)
-//DATAM(__progname_full, 4)
+DATAM(__progname, 4)
+DATAM(__progname_full, 4)
 DATAM(program_invocation_name, 4)
 DATAM(program_invocation_short_name, 4)
 //GOW(pselect, iEippppp)
@@ -1585,7 +1596,7 @@ GOW(sigsetmask, iEi)
 // sigstack
 GOW(sigsuspend, iEp)
 // __sigsuspend
-//GOW(sigtimedwait, iEppp)
+GOW(sigtimedwait, iEpprLL_)
 //GOW(sigvec, iEipp)
 //GOW(sigwait, iEpp)
 //GOW(sigwaitinfo, iEpp)
@@ -1611,6 +1622,7 @@ GOM(sscanf, iEEppV) //%%
 GOM(__stack_chk_fail, vEEv) //%%
 //GOM(lstat64, iEpp)	//%%,noE
 //GOM(stat64, iEpp)	//%%,noE
+GOM(stat, iFpp) //%%,noE
 GOWM(statfs, iEpp)  //%%,noE
 // __statfs
 GOWM(statfs64, iEpp)     //%%,noE
@@ -1667,6 +1679,8 @@ GO(strlen, LEp)
 GOW(strncasecmp, iEppL)
 // __strncasecmp_l
 // strncasecmp_l    // Weak
+GO(strlcat, pEppL)
+GO(strlcpy, pEppL)
 GO(strncat, pEppL)
 GO(__strncat_chk, pEppLL)
 GO(strncmp, iEppL)
@@ -2033,6 +2047,8 @@ GO(wctob, iEu)
 GO(__wctype_l, hEpa)
 GOW(wctype_l, hEpa)
 GO(wcwidth, iEu)
+GO(wcslcat, LFppL)
+GO(wcslcpy, LFppL)
 GOW(wmemchr, pEpiL)
 GO(wmemcmp, iEppL)
 GOW(wmemcpy, pEppL)
@@ -2180,7 +2196,7 @@ GO(fallocate64, iEiiII)
 //DATAM(__libc_stack_end, 4)
 
 //DATAM(___brk_addr, 4)
-//DATA(__libc_enable_secure, 4)
+DATA(__libc_enable_secure, 4)
 
 GOM(__register_frame_info, vEpp)  //%%,noE faked function
 GOM(__deregister_frame_info, pEp) //%%,noE
@@ -2198,9 +2214,7 @@ GO(__errno, pEv)
 //GO(__errno,
 #endif
 
-//GOM(stat,
 //GOM(lstat,
-//GOM(fstat,
 //GO(setprogname,
 //GO(getprogname,
 

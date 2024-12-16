@@ -518,24 +518,25 @@ struct i386_msghdr
   ptr_t     msg_control;  // void *
   ulong_t   msg_controllen;
   int msg_flags;
-} __attribute__((packed, aligned(4)));
+};
 
 struct i386_mmsghdr {
     struct i386_msghdr msg_hdr;
     unsigned int       msg_len;
 };
 
+// Some docs show cmsg_len as a socklen_t (so uint32_t), but thsi not true, it's a size_t (kernel_size_t)
 struct i386_cmsghdr
 {
   ulong_t cmsg_len;
   int cmsg_level;
   int cmsg_type;
-} __attribute__((packed, aligned(4)));
+};
 
 void AlignIOV_32(void* dest, void* source);   // x86 -> Native
 void UnalignIOV_32(void* dest, void* source); // Native -> x86
 
-void AlignMsgHdr_32(void* dest, void* dest_iov, void* dest_cmsg, void* source, int convert_control);   // x86 -> Native
+void AlignMsgHdr_32(void* dest, void* dest_iov, void* dest_cmsg, void* source, int convert_control);    // x86 -> Native
 void UnalignMsgHdr_32(void* dest, void* source); // back to Native -> x86
 
 struct i386_passwd
@@ -602,5 +603,25 @@ typedef struct my_regex_32_s
 void convert_regext_to_32(void* d, void* s);
 void convert_regext_to_64(void* d, void* s);
 
+typedef struct my_ns_msg_32_s {
+	ptr_t     _msg; //const unsigned char	*_
+  ptr_t     _eom; //const unsigned char	*_
+	uint16_t	_id;
+  uint16_t  _flags;
+  uint16_t  _counts[4];
+	ptr_t     _sections[4];//const unsigned char	*_
+	uint32_t	_sect;
+	int			  _rrnum;
+	ptr_t     _msg_ptr; //const unsigned char	*
+} my_ns_msg_32_t;
+
+typedef	struct my_ns_rr_32_s {
+	char			  name[1025];
+	uint16_t		type;
+	uint16_t		rr_class;
+	uint32_t		ttl;
+	uint16_t		rdlength;
+	ptr_t	      rdata;  //const unsigned char *
+} my_ns_rr_32_t;
 
 #endif//__MY_ALIGN32__H_
