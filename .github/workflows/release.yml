@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [X64, RISCV, RK3588, ARM64, ANDROID, TERMUX, LARCH64, ANDROID_GLIBC]
-        type: [Release, Trace, StaticBuild, Box32]
+        platform: [ANDROID_GLIBC]
+        type: [Release, Box32]
         os: [ubuntu-latest]
         exclude:
           - platform: ANDROID
@@ -42,7 +42,7 @@ jobs:
           - platform: TERMUX
             type: Box32
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout Box64 Repository"
         uses: actions/checkout@v4
@@ -66,9 +66,9 @@ jobs:
               echo "BOX64_PLATFORM_MARCRO=-DARM64=1 -DARM_DYNAREC=1 -DBAD_SIGNAL=1" >> $GITHUB_ENV
               echo "BOX64_COMPILER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
             else
-              sudo apt-get -y install git gcc-aarch64-linux-gnu
+              sudo apt-get -y install git gcc-14-aarch64-linux-gnu
               echo "BOX64_PLATFORM_MARCRO=-D${{ matrix.platform }}=1" >> $GITHUB_ENV
-              echo "BOX64_COMPILER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+              echo "BOX64_COMPILER=gcc-14-aarch64-linux-gnu" >> $GITHUB_ENV
             fi
             if [[ ${{ matrix.platform }} == 'TERMUX' ]]; then
               sudo apt-get -y install p7zip
